@@ -1,283 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Coming Soon | Stuart Macfarlane</title>
+    <meta charset="UTF-8">
+    <title>Rotating Cube</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #222;
+            perspective: 1000px;
+        }
 
-<style>
-:root {
-    --bg: #050505;
-    --card: rgba(15, 15, 15, 0.85);
-    --text: #ffffff;
-    --muted: #9ca3af;
-    --green: #4ade80;
-    --purple: #a855f7;
-}
+        .cube {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotate 5s infinite linear;
+        }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+        .face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
 
-body {
-    font-family: Inter, Segoe UI, Arial, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
-    position: relative;
-}
+        .face:nth-child(1) { background: rgba(255, 0, 0, 0.8); } /* Front */
+        .face:nth-child(2) { background: rgba(0, 255, 0, 0.8); } /* Right */
+        .face:nth-child(3) { background: rgba(0, 0, 255, 0.8); } /* Back */
+        .face:nth-child(4) { background: rgba(255, 255, 0, 0.8); } /* Left */
+        .face:nth-child(5) { background: rgba(255, 0, 255, 0.8); } /* Top */
+        .face:nth-child(6) { background: rgba(0, 255, 255, 0.8); } /* Bottom */
 
-/* Grid Background */
-body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background-image:
-        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    z-index: -3;
-}
+        .face:nth-child(1) { transform: translateZ(100px); }
+        .face:nth-child(2) { transform: rotateY(90deg) translateZ(100px); }
+        .face:nth-child(3) { transform: rotateY(180deg) translateZ(100px); }
+        .face:nth-child(4) { transform: rotateY(270deg) translateZ(100px); }
+        .face:nth-child(5) { transform: rotateX(90deg) translateZ(100px); }
+        .face:nth-child(6) { transform: rotateX(-90deg) translateZ(100px); }
 
-/* Green Glow */
-body::after {
-    content: "";
-    position: fixed;
-    top: -200px;
-    left: -200px;
-    width: 500px;
-    height: 500px;
-    background: var(--green);
-    opacity: 0.12;
-    filter: blur(140px);
-    border-radius: 50%;
-    z-index: -2;
-}
-
-.glow-purple {
-    position: fixed;
-    bottom: -250px;
-    right: -250px;
-    width: 600px;
-    height: 600px;
-    background: var(--purple);
-    opacity: 0.12;
-    filter: blur(160px);
-    border-radius: 50%;
-    z-index: -2;
-}
-
-.container {
-    max-width: 1000px;
-    margin: 0 auto;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-}
-
-.content {
-    text-align: center;
-}
-
-.badge {
-    display: inline-block;
-    padding: 0.8rem 1.4rem;
-    border: 1px solid rgba(74,222,128,.4);
-    border-radius: 999px;
-    color: var(--green);
-    background: rgba(15,15,15,0.8);
-    text-transform: uppercase;
-    letter-spacing: 3px;
-    font-size: 0.75rem;
-    margin-bottom: 2rem;
-}
-
-h1 {
-    font-size: clamp(3rem, 10vw, 6rem);
-    line-height: 1;
-    margin-bottom: 1.5rem;
-    font-weight: 800;
-}
-
-.highlight {
-    display: block;
-    color: var(--green);
-    text-shadow:
-        0 0 10px rgba(74,222,128,.9),
-        0 0 20px rgba(74,222,128,.7),
-        0 0 40px rgba(74,222,128,.4);
-}
-
-.description {
-    max-width: 700px;
-    margin: 0 auto 3rem;
-    color: var(--muted);
-    font-size: 1.15rem;
-    line-height: 1.8;
-}
-
-.buttons {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-bottom: 4rem;
-}
-
-.btn {
-    text-decoration: none;
-    padding: 1rem 2rem;
-    border-radius: 14px;
-    font-weight: 600;
-    transition: all .3s ease;
-}
-
-.btn-primary {
-    background: var(--green);
-    color: #000;
-}
-
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 0 25px rgba(74,222,128,.4);
-}
-
-.btn-secondary {
-    border: 1px solid var(--purple);
-    color: #d8b4fe;
-}
-
-.btn-secondary:hover {
-    background: rgba(168,85,247,.1);
-}
-
-.terminal {
-    width: 100%;
-    max-width: 700px;
-    margin: 0 auto;
-    background: rgba(10,10,10,.85);
-    border: 1px solid #222;
-    border-radius: 18px;
-    overflow: hidden;
-    backdrop-filter: blur(10px);
-}
-
-.terminal-header {
-    display: flex;
-    gap: 8px;
-    padding: 1rem;
-    border-bottom: 1px solid #222;
-}
-
-.dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-}
-
-.red { background: #ef4444; }
-.yellow { background: #f59e0b; }
-.green { background: #22c55e; }
-
-.terminal-body {
-    padding: 1.5rem;
-    font-family: Consolas, monospace;
-    text-align: left;
-    line-height: 2;
-}
-
-.prompt {
-    color: var(--green);
-}
-
-.muted {
-    color: #6b7280;
-}
-
-.footer {
-    margin-top: 3rem;
-    color: #555;
-    font-size: 0.9rem;
-}
-
-.cursor {
-    animation: blink 1s infinite;
-}
-
-@keyframes blink {
-    50% {
-        opacity: 0;
-    }
-}
-
-@media (max-width: 768px) {
-    .buttons {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .btn {
-        width: 240px;
-    }
-}
-</style>
+        @keyframes rotate {
+            from { transform: rotateX(0) rotateY(0) translateZ(0); }
+            to { transform: rotateX(360deg) rotateY(360deg) translateZ(0); }
+        }
+    </style>
 </head>
 <body>
-
-<div class="glow-purple"></div>
-
-<div class="container">
-    <div class="content">
-
-        <div class="badge">
-            Under Construction
-        </div>
-
-        <h1>
-            Stuart Macfarlane
-            <span class="highlight">Coming Soon</span>
-        </h1>
-
-        <p class="description">
-            A new home for Microsoft 365, cloud technologies, automation,
-            infrastructure, homelab projects, cybersecurity, and practical
-            technical insights from the real world.
-        </p>
-
-        <div class="buttons">
-            #Launching Soon</a>
-            #Stay Tuned</a>
-        </div>
-
-        <div class="terminal">
-            <div class="terminal-header">
-                <div class="dot red"></div>
-                <div class="dot yellow"></div>
-                <div class="dot green"></div>
-            </div>
-
-            <div class="terminal-body">
-                <div class="prompt">$ Initialising blog...</div>
-                <div class="muted">Loading tutorials ██████████ 100%</div>
-                <div class="muted">Loading homelab projects ██████████ 100%</div>
-                <div class="muted">Loading cloud content ██████████ 100%</div>
-                <div class="prompt">
-                    Preparing launch<span class="cursor">_</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer">
-            © 2026 Stuart Macfarlane
-        </div>
-
+    <div class="cube">
+        <div class="face"></div>
+        <div class="face"></div>
+        <div class="face"></div>
+        <div class="face"></div>
+        <div class="face"></div>
+        <div class="face"></div>
     </div>
-</div>
+<div id="timer" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); color: white; font-size: 24px; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 8px;"></div>
 
+<script>
+    let startTime = Date.now();
+    function updateTimer() {
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        document.getElementById('timer').textContent = `You've been watching for ${elapsed} seconds!`;
+    }
+    setInterval(updateTimer, 1000);
+    updateTimer(); // Initial call
+</script>
 </body>
 </html>

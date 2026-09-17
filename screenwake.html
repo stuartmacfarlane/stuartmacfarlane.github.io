@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Keep Awake</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #070b14;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: white;
+    }
+
+    canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    .glow {
+      position: fixed;
+      width: 700px;
+      height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(
+        circle,
+        rgba(59, 130, 246, 0.12) 0%,
+        rgba(59, 130, 246, 0.04) 40%,
+        transparent 70%
+      );
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      pointer-events: none;
+      animation: breathe 6s ease-in-out infinite;
+    }
+
+    @keyframes breathe {
+      0%, 100% {
+        transform: translate(-50%, -50%) scale(0.9);
+        opacity: 0.6;
+      }
+
+      50% {
+        transform: translate(-50%, -50%) scale(1.15);
+        opacity: 1;
+      }
+    }
+
+    .content {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 30px;
+    }
+
+    .panel {
+      padding: 42px 54px;
+      min-width: 360px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      background: rgba(10, 15, 28, 0.65);
+      backdrop-filter: blur(14px);
+      box-shadow:
+        0 20px 80px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .status-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .dot {
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: #4ade80;
+      box-shadow: 0 0 18px rgba(74, 222, 128, 0.9);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .dot.inactive {
+      background: #f87171;
+      box-shadow: 0 0 18px rgba(248, 113, 113, 0.7);
+      animation: none;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.55;
+        transform: scale(0.8);
+      }
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 34px;
+      font-weight: 600;
+      letter-spacing: -1px;
+    }
+
+    .subtitle {
+      margin-top: 10px;
+      color: rgba(255, 255, 255, 0.55);
+      font-size: 15px;
+    }
+
+    .timer {
+      margin-top: 28px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: rgba(255, 255, 255, 0.35);
+    }
+
+    #elapsed {
+      display: block;
+      margin-top: 6px;
+      font-size: 28px;
+      letter-spacing: 2px;
+      color: rgba(255, 255, 255, 0.8);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .footer {
+      position: fixed;
+      bottom: 20px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      z-index: 2;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.22);
+    }
+  </style>
+</head>
+
+<body>
+
+  <canvas id="background"></canvas>
+  <div class="glow"></div>
+
+  <div class="content">
+    <div class="panel">
+
+      <div class="status-row">
+        <div id="statusDot" class="dot"></div>
+        <h1 id="statusText">Keep Awake Active</h1>
+      </div>
+
+      <div class="subtitle">
+        Screen Wake Lock is active while this page remains open.
+      </div>
+
+      <div class="timer">
+        Awake for
+        <span id="elapsed">00:00:00</span>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="footer">
+    Screen Wake Lock API
+  </div>
+
+<script>
+
+  // --------------------------------------------------
+  // WAKE LOCK
+  // --------------------------------------------------
+
+  let wakeLock = null;
+
+  const statusText = document.getElementById("statusText");
+  const statusDot = document.getElementById("statusDot");
+
+  async function requestWakeLock() {
+
+    if (!("wakeLock" in navigator)) {
+      statusText.textContent = "Wake Lock Unsupported";
+      statusDot.classList.add("inactive");
+      return;
+    }
+
+    try {
+
+      wakeLock = await navigator.wakeLock.request("screen");
+
+      statusText.textContent = "Keep Awake Active";
+      statusDot.classList.remove("inactive");
+
+      wakeLock.addEventListener("release", () => {
+
+        wakeLock = null;
+
+        statusText.textContent = "Wake Lock Released";
+        statusDot.classList.add("inactive");
+
+      });
+
+    } catch (err) {
+
+      console.error(err);
+
+      statusText.textContent = "Wake Lock Failed";
+      statusDot.classList.add("inactive");
+
+    }
+  }
+
+
+  requestWakeLock();
+
+
+  document.addEventListener("visibilitychange", async () => {
+
+    if (
+      document.visibilityState === "visible" &&
+      wakeLock === null
+    ) {
+      await requestWakeLock();
+    }
+
+  });
+
+
+  // --------------------------------------------------
+  // ELAPSED TIMER
+  // --------------------------------------------------
+
+  const startTime = Date.now();
+  const elapsed = document.getElementById("elapsed");
+
+  function updateTimer() {
+
+    const seconds = Math.floor(
+      (Date.now() - startTime) / 1000
+    );
+
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+
+    elapsed.textContent =
+      String(hours).padStart(2, "0") + ":" +
+      String(minutes).padStart(2, "0") + ":" +
+      String(secs).padStart(2, "0");
+
+  }
+
+  setInterval(updateTimer, 1000);
+  updateTimer();
+
+
+  // --------------------------------------------------
+  // ANIMATED NETWORK BACKGROUND
+  // --------------------------------------------------
+
+  const canvas = document.getElementById("background");
+  const ctx = canvas.getContext("2d");
+
+  let width;
+  let height;
+
+  const particles = [];
+  const particleCount = 70;
+
+
+  function resize() {
+
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+
+  }
+
+
+  window.addEventListener("resize", resize);
+
+  resize();
+
+
+  class Particle {
+
+    constructor() {
+      this.reset();
+    }
+
+
+    reset() {
+
+      this.x = Math.random() * width;
+      this.y = Math.random() * height;
+
+      this.vx = (Math.random() - 0.5) * 0.35;
+      this.vy = (Math.random() - 0.5) * 0.35;
+
+      this.radius = Math.random() * 1.5 + 0.5;
+
+    }
+
+
+    update() {
+
+      this.x += this.vx;
+      this.y += this.vy;
+
+
+      if (this.x < 0 || this.x > width) {
+        this.vx *= -1;
+      }
+
+      if (this.y < 0 || this.y > height) {
+        this.vy *= -1;
+      }
+
+    }
+
+
+    draw() {
+
+      ctx.beginPath();
+
+      ctx.arc(
+        this.x,
+        this.y,
+        this.radius,
+        0,
+        Math.PI * 2
+      );
+
+      ctx.fillStyle = "rgba(120,170,255,0.55)";
+      ctx.fill();
+
+    }
+
+  }
+
+
+  for (let i = 0; i < particleCount; i++) {
+    particles.push(new Particle());
+  }
+
+
+  function drawConnections() {
+
+    for (let i = 0; i < particles.length; i++) {
+
+      for (let j = i + 1; j < particles.length; j++) {
+
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+
+        const distance = Math.sqrt(
+          dx * dx + dy * dy
+        );
+
+
+        if (distance < 140) {
+
+          const opacity =
+            (1 - distance / 140) * 0.15;
+
+          ctx.beginPath();
+
+          ctx.moveTo(
+            particles[i].x,
+            particles[i].y
+          );
+
+          ctx.lineTo(
+            particles[j].x,
+            particles[j].y
+          );
+
+          ctx.strokeStyle =
+            `rgba(90,150,255,${opacity})`;
+
+          ctx.lineWidth = 1;
+
+          ctx.stroke();
+
+        }
+
+      }
+
+    }
+
+  }
+
+
+  function animate() {
+
+    ctx.clearRect(0, 0, width, height);
+
+
+    for (const particle of particles) {
+
+      particle.update();
+      particle.draw();
+
+    }
+
+
+    drawConnections();
+
+    requestAnimationFrame(animate);
+
+  }
+
+
+  animate();
+
+</script>
+
+</body>
+</html>
+```

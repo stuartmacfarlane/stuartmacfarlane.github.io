@@ -1,0 +1,7 @@
+---
+import { topicUrl } from '../lib/articles'
+const { tags } = Astro.props
+---
+<ul class="tags" aria-label="Article topics">
+  {tags.map((tag: string) => <li><a href={topicUrl(tag)}>{tag}</a></li>)}
+</ul>

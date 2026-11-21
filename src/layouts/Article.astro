@@ -39,14 +39,17 @@ const sections = headings.filter(({ depth }: { depth: number }) => depth === 2 |
       try {
         await navigator.clipboard.writeText(JSON.parse(button.dataset.copyCode!))
         button.textContent = 'Copied!'
+        button.dataset.copyState = 'success'
         if (status) status.textContent = 'Code copied to clipboard.'
       } catch {
         button.textContent = 'Copy failed'
+        delete button.dataset.copyState
         if (status) status.textContent = 'Copy failed. Select the code to copy it manually.'
       }
       window.clearTimeout(timer)
       timer = window.setTimeout(() => {
         button.textContent = 'Copy'
+        delete button.dataset.copyState
         if (status) status.textContent = ''
       }, 2500)
     })

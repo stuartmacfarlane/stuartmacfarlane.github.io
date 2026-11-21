@@ -1,0 +1,37 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import { codeToHtml } from 'shiki'
+import { articleUrl, formatDate, topicUrl } from '../lib/articles'
+import { codeTheme } from '../lib/code-theme.mjs'
+import { powerShellExcerpt } from '../lib/powershell-excerpt'
+
+interface Props {
+  article: CollectionEntry<'articles'>
+}
+
+const { article } = Astro.props
+const { id, data, body } = article
+const topic = data.tags[0]
+const excerpt = powerShellExcerpt(body)
+const highlighted = excerpt ? await codeToHtml(excerpt, {
+  lang: 'powershell',
+  theme: codeTheme,
+}) : ''
+---
+<article class:list={['featured', { 'featured--with-code': highlighted }]}>
+  <div class="featured-copy">
+    <div class="featured-meta">
+      {topic && <a class="featured-topic" href={topicUrl(topic)}>{topic}</a>}
+      <time datetime={data.pubDate.toISOString()}>{formatDate(data.pubDate)}</time>
+    </div>
+    <h2><a href={articleUrl(id)}>{data.title}</a>{data.draft && ' (Draft)'}</h2>
+    <p>{data.description}</p>
+    <a class="read-article" href={articleUrl(id)} aria-label={'Read article: ' + data.title}>Read article</a>
+  </div>
+  {highlighted && (
+    <figure class="featured-code">
+      <figcaption>PowerShell excerpt</figcaption>
+      <Fragment set:html={highlighted} />
+    </figure>
+  )}
+</article>

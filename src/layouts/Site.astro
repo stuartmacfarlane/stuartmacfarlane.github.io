@@ -1,7 +1,9 @@
 ---
+import '@fontsource-variable/geist'
+import '@fontsource/ibm-plex-mono/latin-400.css'
 import '../styles/site.css'
 
-const { title, description, topics, activeTopic } = Astro.props
+const { title, description, topics, activeTopic, wide = false } = Astro.props
 const isHome = Astro.url.pathname === '/'
 ---
 <!doctype html>
@@ -11,7 +13,7 @@ const isHome = Astro.url.pathname === '/'
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <meta name="color-scheme" content="dark" />
-    <meta name="theme-color" content="#1b1c1d" />
+    <meta name="theme-color" content="#0b1020" />
     <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
     <title>{title}</title>
   </head>
@@ -32,7 +34,7 @@ const isHome = Astro.url.pathname === '/'
           </ul>
         </nav>
       </header>
-      <main id="main" tabindex="-1">
+      <main id="main" class:list={[{ "main-wide": wide }]} tabindex="-1">
         <slot />
       </main>
     </div>

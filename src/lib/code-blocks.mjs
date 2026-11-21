@@ -1,4 +1,5 @@
 import { bundledLanguages, codeToHast } from 'shiki'
+import { codeTheme } from './code-theme.mjs'
 
 const text = (value) => ({ type: 'text', value })
 const element = (tagName, properties, children) => ({
@@ -18,7 +19,7 @@ export const codeBlocks = {
       const language = code.data?.lang ?? 'text'
       const filename = code.data?.meta?.match(/(?:^|\s)title="([^"]+)"/)?.[1]
       const syntax = Object.hasOwn(bundledLanguages, language) ? language : 'text'
-      const highlighted = await codeToHast(source, { lang: syntax, theme: 'github-dark-dimmed' })
+      const highlighted = await codeToHast(source, { lang: syntax, theme: codeTheme })
       const pre = highlighted.children[0]
       pre.properties.tabIndex = 0
       pre.properties.ariaLabel = filename ?? language + ' code'

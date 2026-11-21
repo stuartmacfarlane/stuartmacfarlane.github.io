@@ -4,8 +4,9 @@ import { articleUrl, formatDate, listArticles } from '../lib/articles'
 
 interface Props {
   articles: Awaited<ReturnType<typeof listArticles>>
+  headingLevel?: 'h2' | 'h3'
 }
-const { articles } = Astro.props
+const { articles, headingLevel: Heading = 'h2' } = Astro.props
 ---
 {articles.length ? (
   <ul class="article-list">
@@ -13,9 +14,11 @@ const { articles } = Astro.props
       <li>
         <article class="index-entry">
           <time datetime={data.pubDate.toISOString()}>{formatDate(data.pubDate)}</time>
-          <h2><a href={articleUrl(id)}>{data.title}</a>{data.draft && ' (Draft)'}</h2>
-          <p>{data.description}</p>
-          <Tags tags={data.tags} />
+          <div class="entry-copy">
+            <Heading><a href={articleUrl(id)}>{data.title}</a>{data.draft && ' (Draft)'}</Heading>
+            <p>{data.description}</p>
+            <Tags tags={data.tags} />
+          </div>
         </article>
       </li>
     ))}

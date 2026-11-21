@@ -8,6 +8,8 @@
     "preview": "astro preview"
   },
   "dependencies": {
-    "astro": "7.4.13"
+    "@astrojs/markdown-satteri": "^0.4.10",
+    "astro": "7.4.13",
+    "shiki": "^4.6.0"
   }
 }

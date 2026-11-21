@@ -1,0 +1,38 @@
+---
+import '../styles/site.css'
+
+const { title, description, topics, activeTopic } = Astro.props
+const isHome = Astro.url.pathname === '/'
+---
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#181a1d" />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div class="shell">
+      <header class="site-header">
+        <a class="site-name" href="/">Stuart Macfarlane</a>
+        <p>Practical notes on Microsoft 365 administration</p>
+        <nav aria-label="Topics">
+          <ul class="topics">
+            <li><a href="/" aria-current={isHome ? 'page' : undefined}>All articles</a></li>
+            {topics.map(({ slug, label }) => (
+              <li><a href={'/topics/' + slug + '/'} aria-current={slug === activeTopic ? 'page' : undefined}>{label}</a></li>
+            ))}
+          </ul>
+        </nav>
+      </header>
+      <main id="main" tabindex="-1">
+        <slot />
+      </main>
+    </div>
+  </body>
+</html>

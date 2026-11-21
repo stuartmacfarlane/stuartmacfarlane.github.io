@@ -1,0 +1,25 @@
+---
+import Tags from './Tags.astro'
+import { articleUrl, formatDate, listArticles } from '../lib/articles'
+
+interface Props {
+  articles: Awaited<ReturnType<typeof listArticles>>
+}
+const { articles } = Astro.props
+---
+{articles.length ? (
+  <ul class="article-list">
+    {articles.map(({ id, data }) => (
+      <li>
+        <article class="index-entry">
+          <time datetime={data.pubDate.toISOString()}>{formatDate(data.pubDate)}</time>
+          <div>
+            <h2><a href={articleUrl(id)}>{data.title}</a>{data.draft && ' (Draft)'}</h2>
+            <p>{data.description}</p>
+            <Tags tags={data.tags} />
+          </div>
+        </article>
+      </li>
+    ))}
+  </ul>
+) : <p class="empty">No articles on this topic yet.</p>}

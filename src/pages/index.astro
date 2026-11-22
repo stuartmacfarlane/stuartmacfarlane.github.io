@@ -1,19 +1,5 @@
 ---
-import ArticleList from '../components/ArticleList.astro'
-import FeaturedArticle from '../components/FeaturedArticle.astro'
-import Site from '../layouts/Site.astro'
-import { listArticles, listTopics } from '../lib/articles'
-
-const articles = await listArticles()
-const [featured, ...remaining] = articles
+import HomeView from '../components/HomeView.astro';
 ---
-<Site title="Stuart Macfarlane | Microsoft 365 administration" description="Practical notes on Microsoft 365 administration." topics={listTopics(articles)} wide>
-  <h1 class="section-label">Latest article{featured ? '' : 's'}</h1>
-  {featured ? <FeaturedArticle article={featured} /> : <ArticleList articles={articles} />}
-  {remaining.length > 0 && (
-    <section class="more-articles" aria-labelledby="more-title">
-      <h2 id="more-title">More articles</h2>
-      <ArticleList articles={remaining} headingLevel="h3" />
-    </section>
-  )}
-</Site>
+
+<HomeView lang="en" />

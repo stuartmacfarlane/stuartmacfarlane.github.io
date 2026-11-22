@@ -1,0 +1,56 @@
+site:
+  name: Stuart Macfarlane
+  author: Stuart Macfarlane
+  greeting: "Hi, I'm Stuart Macfarlane."
+  tagline: Notes on Microsoft 365 administration
+  description: Practical guides to Intune, Entra ID, PowerShell and Windows.
+  url: https://stuartmacfarlane.co.uk
+  defaultLanguage: en
+  showLanguageSwitcher: false
+
+nav:
+  - { label: Articles, href: /posts/ }
+  - { label: Topics, href: /tags/ }
+  - { label: About, href: /about/ }
+
+social:
+  - { label: GitHub, href: 'https://github.com/stuartmacfarlane', icon: github }
+
+footerColumns:
+  - title: Writing
+    links:
+      - { label: Articles, href: /posts/ }
+      - { label: Topics, href: /tags/ }
+      - { label: RSS, href: /rss.xml }
+
+promoBanner:
+  enabled: false
+theme:
+  accent: '#ff6b01'
+  defaultMode: dark
+  radius: 12px
+consent:
+  enabled: false
+weather:
+  enabled: false
+mcp:
+  enabled: false
+i18n:
+  enabled: false
+  defaultLanguage: en
+  languages: [en]
+seo:
+  titleTemplate: '{title} — {site}'
+  locale: en_GB
+  keywords: [Microsoft 365, Intune, Entra ID, PowerShell, Windows]
+footer:
+  copyrightName: Stuart Macfarlane
+  credit:
+    show: true
+    label: Powered by Inkfolio
+    href: https://github.com/respectevery01/inkfolio
+
+about:
+  intro:
+    en: |
+      I'm Stuart Macfarlane. This site collects practical notes on Microsoft 365 administration, from managing Windows devices with Intune to querying Entra ID with PowerShell.
